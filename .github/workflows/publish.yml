@@ -2,11 +2,10 @@ name: Build and Push Legacy PostgreSQL 9.6
 
 on:
   schedule:
-    - cron: "0 0 * * 1"  # Weekly refresh to ensure build stability
-  workflow_dispatch:      # Allows you to trigger it manually from the UI
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
 
 env:
-  # Hardcoding the last official stable release of 9.6
   LEGACY_VERSION: "9.6.24"
 
 jobs:
@@ -20,6 +19,12 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
+
+      # --- NEW STEP: Convert repository name to lowercase ---
+      - name: Prepare Repository Name
+        id: repo_name
+        run: |
+          echo "lowercase=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -44,7 +49,8 @@ jobs:
           push: true
           build-args: |
             POSTGRES_VERSION=${{ env.LEGACY_VERSION }}
+          # --- UPDATED: Use the lowercase output from the previous step ---
           tags: |
-            ghcr.io/${{ github.repository }}:9.6
-            ghcr.io/${{ github.repository }}:${{ env.LEGACY_VERSION }}
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ steps.repo_name.outputs.lowercase }}:9.6
+            ghcr.io/${{ steps.repo_name.outputs.lowercase }}:${{ env.LEGACY_VERSION }}
+            ghcr.io/${{ steps.repo_name.outputs.lowercase }}:latest
