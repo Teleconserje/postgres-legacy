@@ -20,10 +20,10 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
-      - name: Prepare Image Name
-        id: img
+      - name: Prepare Repository Name
+        id: repo_name
         run: |
-          echo "path=gruposep/${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_OUTPUT
+          echo "lowercase=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -49,6 +49,6 @@ jobs:
           build-args: |
             POSTGRES_VERSION=${{ env.LEGACY_VERSION }}
           tags: |
-            ghcr.io/${{ steps.img.outputs.path }}:9.6
-            ghcr.io/${{ steps.img.outputs.path }}:${{ env.LEGACY_VERSION }}
-            ghcr.io/${{ steps.img.outputs.path }}:latest
+            ghcr.io/${{ steps.repo_name.outputs.lowercase }}:9.6
+            ghcr.io/${{ steps.repo_name.outputs.lowercase }}:${{ env.LEGACY_VERSION }}
+            ghcr.io/${{ steps.repo_name.outputs.lowercase }}:latest
