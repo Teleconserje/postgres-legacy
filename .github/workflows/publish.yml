@@ -20,7 +20,6 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
-      # --- NEW STEP: Convert repository name to lowercase ---
       - name: Prepare Repository Name
         id: repo_name
         run: |
@@ -49,7 +48,6 @@ jobs:
           push: true
           build-args: |
             POSTGRES_VERSION=${{ env.LEGACY_VERSION }}
-          # --- UPDATED: Use the lowercase output from the previous step ---
           tags: |
             ghcr.io/${{ steps.repo_name.outputs.lowercase }}:9.6
             ghcr.io/${{ steps.repo_name.outputs.lowercase }}:${{ env.LEGACY_VERSION }}
